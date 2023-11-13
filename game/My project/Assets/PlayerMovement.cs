@@ -18,8 +18,16 @@ public class PlayerMovement : MonoBehaviour
     public bool unlimited;
     public bool restricted;
 
+    [Header("Gliding")]
+    public float glideDrag;
+    public float glideSpeed;
+
+    bool readyToGlide;
+    bool isGliding;
+
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode glideKey = KeyCode.LeftControl;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -27,6 +35,9 @@ public class PlayerMovement : MonoBehaviour
     bool grounded;
 
     public Transform orientation;
+
+    [Header("Sounds")]
+    public AudioSource glideAudio;
 
     float horizontalInput;
     float verticalInput;
@@ -54,8 +65,16 @@ public class PlayerMovement : MonoBehaviour
         //handle drag
         if (grounded)
             rb.drag = groundDrag;
+        else if (isGliding)
+            rb.drag = glideDrag;
         else
             rb.drag = 0;
+
+        if (isGliding)
+        {
+            // Add extra speed during gliding
+            rb.AddForce(moveDirection.normalized * glideSpeed * airMultiplier, ForceMode.Acceleration);
+        }
     }
 
     private void FixedUpdate()
@@ -77,6 +96,25 @@ public class PlayerMovement : MonoBehaviour
 
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+        //when to glide
+        if (Input.GetKeyDown(glideKey) && !grounded)
+        {
+            glideAudio.Play();
+            isGliding = true;
+        }
+
+        if (Input.GetKeyUp(glideKey))
+        {
+            isGliding = false;
+            glideAudio.Stop();
+        }
+
+        if (grounded)
+        {
+            isGliding = false;
+            glideAudio.Stop();
+        }
     }
 
     private void MovePlayer()
@@ -85,11 +123,11 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         //on ground
-        if(grounded)
+        if (grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-        
+
         //in air
-        else if(!grounded)
+        else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
     }
 
@@ -98,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         //limit velocity if needed
-        if(flatVel.magnitude > moveSpeed)
+        if (!isGliding && flatVel.magnitude > moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);

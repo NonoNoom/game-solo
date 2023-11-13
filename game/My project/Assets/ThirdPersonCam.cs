@@ -14,8 +14,8 @@ public class ThirdPersonCam : MonoBehaviour
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -31,6 +31,5 @@ public class ThirdPersonCam : MonoBehaviour
 
         if (inputDir != Vector3.zero)
             playerObj.forward = Vector3.Slerp(player.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-
     }
 }
