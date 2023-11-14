@@ -13,7 +13,7 @@ public class AcornCollection : MonoBehaviour
         if(other.transform.tag == "Acorn")
         {
             Acorn++;
-            acornText.text = "Acorn: " + Acorn.ToString();
+            acornText.text = Acorn.ToString();
             Debug.Log(Acorn);
             Destroy(other.gameObject);
         }

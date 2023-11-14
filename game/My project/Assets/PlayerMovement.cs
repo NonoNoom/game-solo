@@ -61,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
 
         MyInput();
         SpeedControl();
+        SpeedControl();
 
         //handle drag
         if (grounded)
