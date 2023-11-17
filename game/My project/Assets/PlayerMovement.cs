@@ -76,15 +76,6 @@ public class PlayerMovement : MonoBehaviour
             // Add extra speed during gliding
             rb.AddForce(moveDirection.normalized * glideSpeed * airMultiplier, ForceMode.Acceleration);
         }
-
-        var animator = GetComponent<Animator>();
-        //animator pause
-        if (isGliding)
-        {
-            animator.speed = 0f;
-        }
-        else //continue
-            animator.speed = 1f;
     }
 
     private void FixedUpdate()
